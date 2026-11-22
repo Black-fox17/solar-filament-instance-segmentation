@@ -1,0 +1,63 @@
+# Default configuration matching the final experimental pipeline in
+# notebooks/01_original_investigation.ipynb.
+# Override paths via CLI arguments or a custom YAML file.
+
+seed: 42
+device: "auto" # "auto", "cuda", "cuda:0", "mps", or "cpu"
+
+paths:
+  # Root directory containing MAGFiLO_1.0_Kaggle_2026/ (or set individual paths below)
+  dataset_root: "data/MAGFiLO_1.0_Kaggle_2026"
+  train_images_dir: "data/MAGFiLO_1.0_Kaggle_2026/train/train_images"
+  train_annotations_json: "data/MAGFiLO_1.0_Kaggle_2026/train/MAGFiLO_1.0_Annotations_kaggle2026_train.json"
+  test_images_dir: "data/MAGFiLO_1.0_Kaggle_2026/test/test_images"
+  checkpoint_dir: "checkpoints"
+  best_checkpoint: "checkpoints/best_model.pth"
+  submission_csv: "outputs/submission.csv"
+
+data:
+  image_size: 2048
+  val_size: 0.15
+  split_seed: 42
+  cache_size: 4
+  num_workers: 2
+  pin_memory: true
+
+patches:
+  patch_size: 768
+  overlap: 192
+  # Stride = patch_size - overlap = 576 -> positions [0, 576, 1152, 1280] (16 patches/image)
+
+model:
+  backbone: "resnet50_fpn"
+  pretrained_coco: true
+  num_classes: 2 # 0: background, 1: filament (class-agnostic)
+  min_size: 768
+  max_size: 768
+  box_detections_per_img: 100
+  # Grayscale normalization derived from 20 sampled GONG H-alpha training images:
+  # mean=83.09/255 ≈ 0.326, std=55.40/255 ≈ 0.217
+  image_mean: [0.326]
+  image_std: [0.217]
+
+training:
+  epochs: 12
+  batch_size: 4
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-4
+  eta_min: 1.0e-6
+  grad_clip_norm: 1.0
+  patience: 4
+  min_delta: 0.001
+  # FP32 only: FP16 autocast produced non-finite gradients in earlier experiments.
+  use_amp: false
+  max_skipped_batch_ratio: 0.01
+  log_interval: 100
+
+inference:
+  batch_size: 4
+  score_threshold: 0.50
+  mask_threshold: 0.50
+  min_mask_area: 20
+  bbox_iou_threshold: 0.30
+  bbox_containment_threshold: 0.50

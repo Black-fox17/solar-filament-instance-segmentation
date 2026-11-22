@@ -1,0 +1,21 @@
+# Core pipeline dependencies
+# Original Colab/Kaggle A100 experiment environment:
+#   Python 3.13.16 | PyTorch 2.14.1+cu130 | Torchvision 0.29.1+cu130 | CUDA 13.0
+numpy>=1.24
+pandas>=2.0
+Pillow>=10.0
+pycocotools>=2.0.7
+PyYAML>=6.0
+scikit-learn>=1.3
+torch>=2.1
+torchvision>=0.16
+tqdm>=4.65
+
+# Optional visualization & data download
+matplotlib>=3.8
+opencv-python>=4.8
+kagglehub>=0.3
+
+# Development & testing
+pytest>=8.0
+ruff>=0.6
